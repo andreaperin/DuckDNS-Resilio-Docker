@@ -1,0 +1,7 @@
+TZ=Europe/Berlin
+DOCKERDIR=/home/ubuntu/.mycontainers/appadata
+RESILIODIR=/home/rslsync
+DuckDNSSUBDOMAIN=*****
+UnboundImage=unbound
+DuckDNSTOKEN=*****
+

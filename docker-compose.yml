@@ -1,0 +1,62 @@
+version: '3.9'
+
+###############################
+####      Services
+###############################
+services:
+
+  # Portainer - WebUI for Containers
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKERDIR}/portainer/data:/data
+    environment:
+      - TZ=${TZ}
+
+  # ResilioSync - PrivateCloud
+  resilio-sync:
+    image: lscr.io/linuxserver/resilio-sync:latest
+    container_name: resilio-sync
+    restart: unless-stopped
+    networks:
+      - default
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKERDIR}/appdata/rslsync/config:/config
+      - ${RESILIODIR}/downloads:/downloads
+      - ${RESILIODIR}/downloads:/sync
+    ports:
+      - 8888:8888
+      - 55555:55555
+
+  # DuckDNS - Dynamic DNS provider
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - TZ=${TZ} #optional
+      - SUBDOMAINS=$DuckDNSSUBDOMAIN
+      - TOKEN=$DuckDNSTOKEN
+      - LOG_FILE=false
+    volumes:
+      - ${DOCKERDIR}/duckdns/appdata/config:/config #optional
+    restart: unless-stopped
+
+###############################
+####      Networks
+###############################
+networks:
+  default:
+    driver: bridge
